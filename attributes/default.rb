@@ -95,7 +95,7 @@ default['datadog']['syslog']['port'] = nil
 # in this cookbook, and apply them to the appropirate node's run list.
 # Read more at http://docs.datadoghq.com/
 
-# For older integrations that do not consume the conf.d yaml files
+# For older integrations that do not consume the conf.d yaml files 
 default['datadog']['legacy_integrations']['nagios']['enabled'] = false
 default['datadog']['legacy_integrations']['nagios']['description'] = "Nagios integration"
 default['datadog']['legacy_integrations']['nagios']['config']['nagios_log'] = '/var/log/nagios3/nagios.log'
