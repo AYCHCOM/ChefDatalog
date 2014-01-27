@@ -97,11 +97,17 @@ default['datadog']['syslog']['udp'] = false
 default['datadog']['syslog']['host'] = nil
 default['datadog']['syslog']['port'] = nil
 
+
 # Web proxy configuration
 default['datadog']['web_proxy']['host'] = nil
 default['datadog']['web_proxy']['port'] = nil
 default['datadog']['web_proxy']['user'] = nil
 default['datadog']['web_proxy']['password'] = nil
+
+# datadog-Statsd
+default['datadog']['dogstatsd'] = false
+default['datadog']['dogstatsd_port'] = 8125
+default['datadog']['dogstatsd_interval'] = 10
 
 # For service-specific configuration, use the integration recipes included
 # in this cookbook, and apply them to the appropirate node's run list.
