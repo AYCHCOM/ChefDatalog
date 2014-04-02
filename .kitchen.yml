@@ -118,7 +118,7 @@ suites:
       mongo:
         instances:
           - host: localhost
-            port: 27017
+            port: 27017 
 
 - name: dd-agent-kafka
   run_list:
