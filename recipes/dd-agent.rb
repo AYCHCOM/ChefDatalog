@@ -2,7 +2,7 @@
 # Cookbook Name:: datadog
 # Recipe:: dd-agent
 #
-# Copyright 2011-2012, Datadog
+# Copyright 2011-2014, Datadog
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,11 +49,8 @@ else
   end
 end
 
-# Common configuration
-service "datadog-agent" do
-  action :enable
-  supports :restart => true
-end
+# Set the correct Agent startup action
+agent_action = node['datadog']['agent_start'] ? :start : :stop
 
 # Make sure the config directory exists
 directory "/etc/dd-agent" do
@@ -77,5 +74,11 @@ template "/etc/dd-agent/datadog.conf" do
     :api_key => node['datadog']['api_key'],
     :dd_url => node['datadog']['url']
   )
-  notifies :restart, "service[datadog-agent]", :delayed
+end
+
+# Common configuration
+service "datadog-agent" do
+  action [:enable, agent_action]
+  supports :restart => true, :status => true, :start => true, :stop => true
+  subscribes :restart, 'template[/etc/dd-agent/datadog.conf]', :delayed unless node['datadog']['agent_start'] == false
 end

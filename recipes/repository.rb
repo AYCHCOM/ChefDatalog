@@ -2,7 +2,7 @@
 # Cookbook Name:: datadog
 # Recipe:: repository
 #
-# Copyright 2013, Datadog
+# Copyright 2013-2014, Datadog
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ when "rhel"
     name "datadog"
     description "datadog"
     url node['datadog']['yumrepo']
+    gpgcheck false if respond_to? :gpgcheck
     action :add
   end
 end

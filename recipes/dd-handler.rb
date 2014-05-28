@@ -2,7 +2,7 @@
 # Cookbook Name:: datadog
 # Recipe:: dd-handler
 #
-# Copyright 2011-2012, Datadog
+# Copyright 2011-2014, Datadog
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,4 +49,4 @@ chef_handler "Chef::Handler::Datadog" do
   ]
   supports :report => true, :exception => true
   action :nothing
-end.run_action(:enable)
+end.run_action(:enable) if node['datadog']['chef_handler_enable']

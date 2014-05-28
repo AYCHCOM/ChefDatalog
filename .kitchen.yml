@@ -33,6 +33,14 @@ platforms:
     box: opscode-centos-6.4_chef_11.4.4
     box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.4_chef-11.4.4.box
     require_chef_omnibus: 10.24.4
+
+# Oldest reported
+- name: centos-6.5_chef_10.14.0
+  driver_config:
+    box: opscode_centos-6.5_chef-provisionerless
+    box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box
+    require_chef_omnibus: 10.14.0
+
 - name: centos-5.9_chef_11.4.4
   driver_config:
     box: opscode-centos-5.9_chef-11.4.4
@@ -43,6 +51,12 @@ platforms:
     box: opscode-centos-5.9_chef-11.4.4
     box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-5.9_chef-11.4.4.box
     require_chef_omnibus: 10.24.4
+
+- name: debian-7.4_chef_11.10.4
+  driver_config:
+    box: opscode_debian-7.4_chef-provisionerless
+    box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_debian-7.4_chef-provisionerless.box
+    require_chef_omnibus: 11.10.4
 
 suites:
 # - name: default
@@ -57,3 +71,88 @@ suites:
     datadog:
       api_key: somethingnotnil
       application_key: alsonotnil
+
+- name: dd-agent-haproxy
+  run_list:
+    - recipe[datadog::dd-handler]
+    - recipe[datadog::haproxy]
+  attributes:
+    datadog:
+      api_key: somethingnotnil
+      application_key: alsonotnil
+      haproxy:
+        instances:
+          - username: admin
+            password: sekret
+            url: http://localhost:22002/status
+            status_check: false
+            collect_aggregates_only: true
+            collect_status_metrics: true
+
+- name: dd-agent-jmx
+  run_list:
+    - recipe[datadog::dd-handler]
+    - recipe[datadog::jmx]
+  attributes:
+    datadog:
+      api_key: somethingnotnil
+      application_key: alsonotnil
+      jmx:
+        instances:
+          - server: localhost
+            port: 9999
+            extra_key: extra_val
+            include:
+              - domain: domain0
+              - domain: domain1
+            exclude: []
+
+- name: dd-agent-mongo
+  run_list:
+    - recipe[datadog::dd-handler]
+    - recipe[datadog::mongo]
+  attributes:
+    datadog:
+      api_key: somethingnotnil
+      application_key: alsonotnil
+      mongo:
+        instances:
+          - host: localhost
+            port: 27017
+
+- name: dd-agent-kafka
+  run_list:
+    - recipe[datadog::dd-handler]
+    - recipe[datadog::kafka]
+  attributes:
+    datadog:
+      api_key: somethingnotnil
+      application_key: alsonotnil
+      kafka:
+        instances:
+          - host: localhost
+            port: 9999
+            name: my_kafka
+            user: username
+            password: password
+            java_bin_path: /path/to/java
+            trust_store_path: /path/to/trustStore.jks
+            trust_store_password: password
+
+- name: dd-agent-kafka-consumer
+  run_list:
+    - recipe[datadog::dd-handler]
+    - recipe[datadog::kafka_consumer]
+  attributes:
+    datadog:
+      api_key: somethingnotnil
+      application_key: alsonotnil
+      kafka_consumer:
+        instances:
+          - kafka_connect_str: localhost:19092
+            zk_connect_str: localhost:2181
+            zk_prefix: /0.8
+            consumer_groups:
+              my_consumer:
+                my_topic: [0, 1, 4, 12]
+

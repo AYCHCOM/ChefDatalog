@@ -1,5 +1,27 @@
 include_recipe "datadog::dd-agent"
 
+# Monitor postgres
+#
+# Simply declare the following attributes
+# One instance per server.
+#
+# node['datadog']['postgres']['instances'] = [
+#   {
+#     'host' => "localhost",
+#     'port' => "5432",
+#     'username' => "datadog",
+#     'tags' => ["test"]
+#   },
+#   {
+#     'host' => "remote",
+#     'port' => "5432",
+#     'username' => "datadog",
+#     'tags' => ["prod"],
+#     'dbname' => 'my_database',
+#     'relations' => ["apple_table", "orange_table"]
+#   }
+# ]
+
 package "psycopg2" do
   case node["platform_family"]
   when "debian"
