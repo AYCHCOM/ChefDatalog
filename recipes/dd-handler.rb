@@ -38,7 +38,8 @@ execute 'gem build chef-handler-datadog.gemspec' do
 end
 
 chef_gem 'chef-handler-datadog' do
-  source '/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.shopify1.gem'
+  version '0.4.0.1'
+  source '/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.1.gem'
 end
 
 require 'chef/handler/datadog'
