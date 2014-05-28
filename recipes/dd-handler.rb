@@ -20,23 +20,27 @@
 include_recipe "chef_handler"
 ENV["DATADOG_HOST"] = node['datadog']['url']
 
-if (Gem::Version.new(Chef::VERSION) < Gem::Version.new('0.10.9'))
-  Chef::Log.debug 'Installing gem with trick method'
-  # This method ensures that the gem will be available for loading on the first run
-  # TODO: Remove once 0.10.8 is fully end-of-life
-  r = gem_package "chef-handler-datadog" do
-    action :nothing
-    version node["datadog"]["chef_handler_version"]
-  end
-  r.run_action(:install)
-  Gem.clear_paths
-else
-  # The chef_gem provider was introduced in Chef 0.10.10
-  chef_gem "chef-handler-datadog" do
-    action :install
-    version node["datadog"]["chef_handler_version"]
-  end
+# In order to track all roles assigned to a server we need to install
+# our own fork of the chef-handler-gem.
+# What's going on?
+#
+# 1. pull the source down from our fork
+# 2. use the gem command to build that fork
+# 3. install our the new version into the chef environment (chef_gem
+#    instead of gem_package)
+#
+git '/usr/local/src/chef-handler-datadog' do
+  repository 'https://github.com/Shopify/chef-handler-datadog.git'
 end
+
+execute 'gem build chef-handler-datadog.gemspec' do
+  cwd '/usr/local/src/chef-handler-datadog'
+end
+
+chef_gem 'chef-handler-datadog' do
+  source '/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.shopify1.gem'
+end
+
 require 'chef/handler/datadog'
 
 # Create the handler to run at the end of the Chef execution
@@ -50,3 +54,4 @@ chef_handler "Chef::Handler::Datadog" do
   supports :report => true, :exception => true
   action :nothing
 end.run_action(:enable)
+
