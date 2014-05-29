@@ -31,6 +31,8 @@ ENV["DATADOG_HOST"] = node['datadog']['url']
 #
 git '/usr/local/src/chef-handler-datadog' do
   repository 'https://github.com/Shopify/chef-handler-datadog.git'
+  revision 'master'
+  action :sync
 end
 
 execute 'gem build chef-handler-datadog.gemspec' do
