@@ -35,8 +35,10 @@ git '/usr/local/src/chef-handler-datadog' do
   action :sync
 end
 
-execute 'gem build chef-handler-datadog.gemspec' do
+execute 'build_chef-handler-datadog_gem' do
   cwd '/usr/local/src/chef-handler-datadog'
+  command 'gem build chef-handler-datadog.gemspec'
+  action :run
 end
 
 chef_gem 'chef-handler-datadog' do
