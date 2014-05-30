@@ -29,23 +29,22 @@ ENV["DATADOG_HOST"] = node['datadog']['url']
 # 3. install our the new version into the chef environment (chef_gem
 #    instead of gem_package)
 #
-g = git '/usr/local/src/chef-handler-datadog' do
-      repository 'https://github.com/Shopify/chef-handler-datadog.git'
-      revision 'master'
-      action :nothing
-    end
-g.run_action(:sync)
+git '/usr/local/src/chef-handler-datadog' do
+  repository 'https://github.com/Shopify/chef-handler-datadog.git'
+  revision 'master'
+  action :sync
+end
 
-build_gem = execute 'build_chef-handler-datadog_gem' do
-              cwd '/usr/local/src/chef-handler-datadog'
-              command 'gem build chef-handler-datadog.gemspec'
-              action :nothing
-            end
-build_gem.run_action(:run)
+execute 'build_chef-handler-datadog_gem' do
+  cwd '/usr/local/src/chef-handler-datadog'
+  command 'gem build chef-handler-datadog.gemspec'
+  action :run
+end
 
 chef_gem 'chef-handler-datadog' do
   version '0.4.0.1'
   source '/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.1.gem'
+  only_if { File.exists?('/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.1.gem') }
 end
 
 require 'chef/handler/datadog'
