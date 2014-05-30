@@ -42,9 +42,9 @@ execute 'build_chef-handler-datadog_gem' do
 end
 
 chef_gem 'chef-handler-datadog' do
-  version '0.4.0.1'
-  source '/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.1.gem'
-  only_if { File.exists?('/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.1.gem') }
+  version '0.4.0.shopify'
+  source '/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.shopify.gem'
+  only_if { File.exists?('/usr/local/src/chef-handler-datadog/chef-handler-datadog-0.4.0.shopify.gem') }
 end
 
 begin 
