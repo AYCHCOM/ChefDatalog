@@ -33,12 +33,13 @@ git '/usr/local/src/chef-handler-datadog' do
   repository 'https://github.com/Shopify/chef-handler-datadog.git'
   revision 'master'
   action :sync
+  notifies :run, "execute[build_chef-handler-datadog_gem]", :immediately
 end
 
 execute 'build_chef-handler-datadog_gem' do
   cwd '/usr/local/src/chef-handler-datadog'
   command 'gem build chef-handler-datadog.gemspec'
-  action :run
+  action :nothing
 end
 
 chef_gem 'chef-handler-datadog' do
