@@ -18,6 +18,10 @@ dogstreams: <%= node['datadog']['dogstreams'].join(', ') %>
 graphite_listen_port: <%= node['datadog']['graphite_port'] %>
 <% end -%>
 
+<% if node['datadog']['agent_checks_interval'] -%>
+agent_checks_interval: <%= node['datadog']['agent_checks_interval'] %>
+<% end -%>
+
 <% if node['datadog']['dogstatsd'] -%>
 # ========================================================================== #
 # DogStatsd configuration                                                    #
