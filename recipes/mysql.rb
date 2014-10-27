@@ -11,6 +11,7 @@ include_recipe 'datadog::dd-agent'
 #     'server' => "localhost",
 #     'user' => "my_username",
 #     'pass' => "my_password",
+#     'sock' => "/path/to/mysql.sock",
 #     'tags' => ["prod"],
 #     'options' => [
 #       "replication: 0",
@@ -18,16 +19,6 @@ include_recipe 'datadog::dd-agent'
 #     ]
 #   },
 # ]
-
-package 'python-mysql' do
-  case node['platform_family']
-  when 'debian'
-    package_name 'python-mysqldb'
-  when 'rhel'
-    package_name 'MySQL-python'
-  end
-  action :install
-end
 
 datadog_monitor 'mysql' do
   instances node['datadog']['mysql']['instances']
