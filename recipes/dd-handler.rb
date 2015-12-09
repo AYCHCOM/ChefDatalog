@@ -2,7 +2,7 @@
 # Cookbook Name:: datadog
 # Recipe:: dd-handler
 #
-# Copyright 2011-2012, Datadog
+# Copyright 2011-2015, Datadog
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,31 +17,28 @@
 # limitations under the License.
 #
 
-include_recipe "chef_handler"
-ENV["DATADOG_HOST"] = node['datadog']['url']
+if Chef::Config[:why_run]
+  # chef_handler 1.1 needs us to require datadog handler's file,
+  # which makes why-run runs fail when chef-handler-datadog is not installed,
+  # so skip the recipe when in why-run mode until we can use chef_handler 1.2
+  Chef::Log.warn('Running in why-run mode, skipping dd-handler')
+  return
+end
 
-if (Gem::Version.new(Chef::VERSION) < Gem::Version.new('0.10.9'))
-  Chef::Log.debug 'Installing gem with trick method'
-  # This method ensures that the gem will be available for loading on the first run
-  # TODO: Remove once 0.10.8 is fully end-of-life
-  r = gem_package "chef-handler-datadog" do
-    action :nothing
-    version node["datadog"]["chef_handler_version"]
-  end
-  r.run_action(:install)
-  Gem.clear_paths
-else
-  # The chef_gem provider was introduced in Chef 0.10.10
-  chef_gem "chef-handler-datadog" do
-    action :install
-    version node["datadog"]["chef_handler_version"]
-  end
+include_recipe 'chef_handler'
+ENV['DATADOG_HOST'] = node['datadog']['url']
+
+chef_gem 'chef-handler-datadog' do # ~FC009
+  action :install
+  version node['datadog']['chef_handler_version']
+  # Chef 12 introduced `compile_time` - remove when Chef 11 is EOL.
+  compile_time true if respond_to?(:compile_time)
 end
 require 'chef/handler/datadog'
 
 # Create the handler to run at the end of the Chef execution
-chef_handler "Chef::Handler::Datadog" do
-  source "chef/handler/datadog"
+chef_handler 'Chef::Handler::Datadog' do
+  source 'chef/handler/datadog'
   arguments [
     :api_key => node['datadog']['api_key'],
     :application_key => node['datadog']['application_key'],
@@ -49,4 +46,4 @@ chef_handler "Chef::Handler::Datadog" do
   ]
   supports :report => true, :exception => true
   action :nothing
-end.run_action(:enable)
+end.run_action(:enable) if node['datadog']['chef_handler_enable']

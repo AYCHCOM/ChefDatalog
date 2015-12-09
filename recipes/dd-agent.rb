@@ -2,7 +2,7 @@
 # Cookbook Name:: datadog
 # Recipe:: dd-agent
 #
-# Copyright 2011-2012, Datadog
+# Copyright 2011-2015, Datadog
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,49 +17,29 @@
 # limitations under the License.
 #
 
-# Install the Apt/Yum repository if enabled
-if node['datadog']['installrepo']
-  include_recipe "datadog::repository"
-end
-
-if node['platform_family'] == 'debian'
-  # Thanks to @joepcds for the Ubuntu 11.04 fix
-  # setuptools has been packaged with a bug
-  # https://bugs.launchpad.net/ubuntu/+source/supervisor/+bug/777862
-  if node['platform_version'].to_f == 11.04
-    package 'python-setuptools'
-    easy_install_package "elementtree"
-  end
-
-  # apt-1.8.0 has a bug that makes the new apt-repo not available right away
-  # running apt-get update clears the issue
-  log "Running apt-get update to work around COOK-2171" do
-    notifies :run, "execute[apt-get update]", :immediately
-    not_if "apt-cache search datadog-agent | grep datadog-agent"
-  end
-end
-
-if node['datadog']['install_base']
-  package "datadog-agent-base" do
-    version node['datadog']['agent_version']
-  end
+# Install the agent
+if node['platform_family'] == 'windows'
+  include_recipe 'datadog::_install-windows'
 else
-  package "datadog-agent" do
-    version node['datadog']['agent_version']
-  end
+  include_recipe 'datadog::_install-linux'
 end
 
-# Common configuration
-service "datadog-agent" do
-  action :enable
-  supports :restart => true
-end
+# Set the correct Agent startup action
+agent_action = node['datadog']['agent_start'] ? :start : :stop
+# Set the correct config file
+agent_config_file = ::File.join(node['datadog']['config_dir'], 'datadog.conf')
 
 # Make sure the config directory exists
-directory "/etc/dd-agent" do
-  owner "root"
-  group "root"
-  mode 0755
+directory node['datadog']['config_dir'] do
+  if node['platform_family'] == 'windows'
+    owner 'Administrators'
+    rights :full_control, 'Administrators'
+    inherits false
+  else
+    owner 'dd-agent'
+    group 'root'
+    mode 0755
+  end
 end
 
 #
@@ -69,13 +49,30 @@ end
 #
 raise "Add a ['datadog']['api_key'] attribute to configure this node's Datadog Agent." if node['datadog'] && node['datadog']['api_key'].nil?
 
-template "/etc/dd-agent/datadog.conf" do
-  owner "root"
-  group "root"
-  mode 0644
+template agent_config_file do
+  if node['platform_family'] == 'windows'
+    owner 'Administrators'
+    rights :full_control, 'Administrators'
+    inherits false
+  else
+    owner 'dd-agent'
+    group 'root'
+    mode 0640
+  end
   variables(
     :api_key => node['datadog']['api_key'],
     :dd_url => node['datadog']['url']
   )
-  notifies :restart, "service[datadog-agent]", :delayed
+end
+
+# Common configuration
+service 'datadog-agent' do
+  service_name node['datadog']['agent_name']
+  action [:enable, agent_action]
+  if node['platform_family'] == 'windows'
+    supports :restart => true, :start => true, :stop => true
+  else
+    supports :restart => true, :status => true, :start => true, :stop => true
+  end
+  subscribes :restart, "template[#{agent_config_file}]", :delayed unless node['datadog']['agent_start'] == false
 end
