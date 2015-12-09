@@ -2,7 +2,7 @@
 # Cookbook Name:: datadog
 # Attributes:: default
 #
-# Copyright 2011-2014, Datadog
+# Copyright 2011-2012, Datadog
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,63 +28,37 @@ default['datadog']['application_key'] = nil
 
 # Don't change these
 # The host of the Datadog intake server to send agent data to
-default['datadog']['url'] = 'https://app.datadoghq.com'
+default['datadog']['url'] = "https://app.datadoghq.com"
 
 # Add tags as override attributes in your role
-default['datadog']['tags'] = ''
-
-# Autorestart agent
-default['datadog']['autorestart'] = false
+default['datadog']['tags'] = ""
 
 # Repository configuration
-architecture_map = {
-  'i686' => 'i386',
-  'i386' => 'i386',
-  'x86' => 'i386'
-}
-architecture_map.default = 'x86_64'
-
 default['datadog']['installrepo'] = true
-default['datadog']['aptrepo'] = 'http://apt.datadoghq.com'
-default['datadog']['aptrepo_dist'] = 'stable'
-default['datadog']['yumrepo'] = "http://yum.datadoghq.com/rpm/#{architecture_map[node['kernel']['machine']]}/"
-
-# Set to true to always install datadog-agent-base (usually only installed on
-# systems with a version of Python lower than 2.6) instead of datadog-agent
-#
-# The .gsub is done because some platforms may append characters that aren't valid for a Gem::Version comparison.
-begin
-  default['datadog']['install_base'] = Gem::Version.new(node['languages']['python']['version'].gsub(/(\d\.\d\.\d).+/, '\\1')) < Gem::Version.new('2.6.0')
-rescue NoMethodError # nodes['languages']['python'] == nil
-  Chef::Log.warn 'no version of python found, please install Agent version 5.x or higher.'
-rescue ArgumentError
-  Chef::Log.warn "could not parse python version string: #{node['languages']['python']['version']}"
-end
+default['datadog']['aptrepo'] = "http://apt.datadoghq.com"
+default['datadog']['yumrepo'] = "http://yum.datadoghq.com/rpm"
 
 # Agent Version
 default['datadog']['agent_version'] = nil
 
+# Set to true to always install datadog-agent-base (usually only installed on
+# systems with a version of Python lower than 2.6) instead of datadog-agent
+begin
+  default['datadog']['install_base'] = Gem::Version.new(node['languages']['python']['version']) < Gem::Version.new('2.6.0')
+rescue NoMethodError # nodes['languages']['python'] == nil
+  Chef::Log.warn 'no version of python found'
+end
+
 # Chef handler version
 default['datadog']['chef_handler_version'] = nil
-
-# Enable the Chef handler to report to datadog
-default['datadog']['chef_handler_enable'] = true
 
 # Boolean to enable debug_mode, which outputs massive amounts of log messages
 # to the /tmp/ directory.
 default['datadog']['debug'] = false
 
-# Default to false to non_local_traffic
-# See: https://github.com/DataDog/dd-agent/wiki/Network-Traffic-and-Proxy-Configuration
-default['datadog']['non_local_traffic'] = false
-
 # How often you want the agent to collect data, in seconds. Any value between
 # 15 and 60 is a reasonable interval.
 default['datadog']['check_freq'] = 15
-
-# Specify agent hostname
-# More information available here: http://docs.datadoghq.com/hostnames/#agent
-default['datadog']['hostname'] = node.name
 
 # If running on ec2, if true, use the instance-id as the host identifier
 # rather than the hostname for the agent or nodename for chef-handler.
@@ -96,9 +70,6 @@ default['datadog']['use_mount'] = false
 # Change port the agent is listening to
 default['datadog']['agent_port'] = 17123
 
-# Start agent or not
-default['datadog']['agent_start'] = true
-
 # Start a graphite listener on this port
 # https://github.com/DataDog/dd-agent/wiki/Feeding-Datadog-with-Graphite
 default['datadog']['graphite'] = false
@@ -107,34 +78,12 @@ default['datadog']['graphite_port'] = 17124
 # log-parsing configuration
 default['datadog']['dogstreams'] = []
 
-# custom emitter configuration
-default['datadog']['custom_emitters'] = []
-
 # Logging configuration
 default['datadog']['syslog']['active'] = false
 default['datadog']['syslog']['udp'] = false
 default['datadog']['syslog']['host'] = nil
 default['datadog']['syslog']['port'] = nil
 
-
-# Web proxy configuration
-default['datadog']['web_proxy']['host'] = nil
-default['datadog']['web_proxy']['port'] = nil
-default['datadog']['web_proxy']['user'] = nil
-default['datadog']['web_proxy']['password'] = nil
-
-# datadog-Statsd
-default['datadog']['dogstatsd'] = false
-default['datadog']['dogstatsd_port'] = 8125
-default['datadog']['dogstatsd_interval'] = 10
-default['datadog']['dogstatsd_normalize'] = 'yes'
-
 # For service-specific configuration, use the integration recipes included
 # in this cookbook, and apply them to the appropirate node's run list.
 # Read more at http://docs.datadoghq.com/
-
-# For older integrations that do not consume the conf.d yaml files 
-default['datadog']['legacy_integrations']['nagios']['enabled'] = false
-default['datadog']['legacy_integrations']['nagios']['description'] = 'Nagios integration'
-default['datadog']['legacy_integrations']['nagios']['config']['nagios_log'] = '/var/log/nagios3/nagios.log'
-
