@@ -1,8 +1,9 @@
 language: ruby
-
 rvm:
   - 1.9.3
-  - 2.0.0
-  - 2.1.2
 
-bundler_args: --without=integration
+bundler_args: --without=development vagrant
+
+gemfile:
+  - gemfiles/Gemfile.chef-11
+  - gemfiles/Gemfile.chef-10

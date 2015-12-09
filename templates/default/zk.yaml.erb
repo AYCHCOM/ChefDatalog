@@ -1,4 +1,3 @@
-<% excluded_keys = ["host", "port", "timeout", "tags"] -%>
 instances:
   <% @instances.each do |instance| -%>
   - host: <%= instance["host"] %>
@@ -9,9 +8,6 @@ instances:
       <% instance["tags"].each do |tag| -%>
       - <%= tag %>
       <% end -%>
-    <% end -%>
-    <% (instance.keys - excluded_keys).each do |key| -%>
-    <%= key %>: <%= instance[key] %>
     <% end -%>
   <% end %>
 

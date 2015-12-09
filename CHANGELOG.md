@@ -1,60 +1,10 @@
 Changes
 =======
 
-# 2.0.0 / 2014-08-22
+# 1.2.0 / Unreleased
 
-* **BREAKING CHANGE**: Datadog Agent 5.0.0 Release Edition
-
-  With the release of Datadog Agent 5.x, all Python dependencies are now bundled, and extensions for monitoring are no
-  longer needed. Integration-specific recipes no longer install any packages, so if you are using a version older than
-  5.x, you may have to install these yourself. This greatly simplifies deployment of all components for monitoring.
-  See commit b77582122f3db774a838f90907b421e544dd099c for the exact package resources that have been removed.
-  Affected recipes:
-
-  - hdfs
-  - memcache
-  - mongodb
-  - mysql
-  - postgres
-  - redisdb
-
-* **BREAKING CHANGE**: Removed chef_gem support for Chef versions pre 0.10.9.
-
-  We haven't supported this version of Chef in some time, so it's unlikely that you will be affected at all.
-  Just in case, please review what versions of Chef you have installed, and use an older version of this cookbook until
-  you can upgrade them.
-
-* [OPTIMIZE] Update repository recipe to choose correct arch, [@remh][]
-* [OPTIMIZE] Remove conditional python dep for Ubuntu 11.04, [@miketheman][]
-* [OPTIMIZE] Remove extra `apt-get` call during Agent recipe run, [@miketheman][]
-* [FEATURE] Add `kafka` monitoring recipe & tests, [#113][] [@qqfr2507][]
-* [FEATURE] Allow database name to be passed into postgres template, [@miketheman][]
-* [MISC] Many updates to testing suite. Faster style, better specs. [@miketheman][]
-
-# 1.2.0 / 2014-03-24
-
-* [FEATURE] Add `relations` parameter to Postgres check config, [#97][] [@miketheman][]
-* [FEATURE] Add `sock` parameter to MySQL check configuration, [#105][] [@thisismana][]
-* [FEATURE] Add more parameters to the haproxy templte to collect status metrics, [#103][] [@evan2645][] & [@miketheman][]
-* [FEATURE] `datadog::mongo` recipe now installs `pymongo` and prerequisites, [#81][] [@dwradcliffe][]
-* [FEATURE] Allow attribute control over whether to allow the local Agent to handle non-local traffic, [#100][] [@coosh][]
-* [FEATURE] Allow attribute control over whether the Chef Handler is activated, [#95][] [@jedi4ever][], [@miketheman][]
-* [FEATURE] Allow attribute control over whether Agent should be running, [#94][] [@jedi4ever][], [@miketheman][]
-* [FEATURE] Reintroduce attribute config for dogstatsd daemon, [#90][] [@jedi4ever][], [@miketheman][]
-* [FEATURE] Allow jmx template to accept arbitrary `key, value` statements, [#93][] [@clofresh][]
-* [FEATURE] Allow cassandra/zookeeper templates to accept arbitrary `key, value` statements, [@miketheman][]
-* [FEATURE] Add name param to varnish recipe, [#86][] [@clofresh][]
-* [FEATURE] Allow attribute-driven settings for web proxy, [#82][]  [@antonio-osorio][]
-* [FEATURE] Allow override of Agent config for hostname via attribute, [#76][] [@ryandjurovich][]
-* [FEATURE] Allow for non-conf.d integrations to be set via attributes, [#66][] [@babbottscott][]
 * [FEATURE] added hdfs recipe and template, [#77][] [@phlipper][]
 * [FEATURE] added zookeeper recipe and template, [#74][] [@phlipper][]
-* [BUGFIX] Warn user when more than one `network` instance is defined, [#98][] [@miketheman][]
-* [BUGFIX] Properly indent jmx template, [#88][] [@flah00][]
-* [BUGFIX] Handle unrecognized Python version strings in a better fashion, [#79][] [#80][] [#84][], [@jtimberman][], [@schisamo][], [@miketheman][]
-* [BUGFIX] Set gpgcheck to false for `yum` repo if it exists, [#89][] [@alexism][], [#101][] [@nkts][]
-* [MISC] Inline doc for postgres recipe, [#83][] [@timusg][]
-
 
 # 1.1.1 / 2013-10-17
 
@@ -70,7 +20,7 @@ Changes
 * [FEATURE] Use Python version from Ohai to determine packages to install, [#65][] [@elijahandrews][]
 * [BUGFIX] redisdb default port in template should be 6379, [#59][] [@miketheman][]
 * [BUGFIX] templates creating empty `tags` in config when unspecified for multiple integrations [#61][] [@alq][]
-* [MISC] updated tests [@elijahandrews][], [@miketheman][]
+* [MISC] updated tests [@elijahandres][], [@miketheman][]
 * [MISC] correct the riak integration example, [@miketheman][]
 * [MISC] updated CHANGELOG.md style, [@miketheman][]
 
@@ -186,53 +136,16 @@ A fix has gone in to `apt` 2.1.0 that relaxes this condition, and plays well wit
 [#61]: https://github.com/DataDog/chef-datadog/issues/61
 [#63]: https://github.com/DataDog/chef-datadog/issues/63
 [#65]: https://github.com/DataDog/chef-datadog/issues/65
-[#66]: https://github.com/DataDog/chef-datadog/issues/66
 [#67]: https://github.com/DataDog/chef-datadog/issues/67
 [#74]: https://github.com/DataDog/chef-datadog/issues/74
-[#76]: https://github.com/DataDog/chef-datadog/issues/76
 [#77]: https://github.com/DataDog/chef-datadog/issues/77
-[#79]: https://github.com/DataDog/chef-datadog/issues/79
-[#80]: https://github.com/DataDog/chef-datadog/issues/80
-[#81]: https://github.com/DataDog/chef-datadog/issues/81
-[#82]: https://github.com/DataDog/chef-datadog/issues/82
-[#83]: https://github.com/DataDog/chef-datadog/issues/83
-[#84]: https://github.com/DataDog/chef-datadog/issues/84
-[#86]: https://github.com/DataDog/chef-datadog/issues/86
-[#88]: https://github.com/DataDog/chef-datadog/issues/88
-[#89]: https://github.com/DataDog/chef-datadog/issues/89
-[#90]: https://github.com/DataDog/chef-datadog/issues/90
-[#93]: https://github.com/DataDog/chef-datadog/issues/93
-[#94]: https://github.com/DataDog/chef-datadog/issues/94
-[#95]: https://github.com/DataDog/chef-datadog/issues/95
-[#97]: https://github.com/DataDog/chef-datadog/issues/97
-[#98]: https://github.com/DataDog/chef-datadog/issues/98
-[#100]: https://github.com/DataDog/chef-datadog/issues/100
-[#101]: https://github.com/DataDog/chef-datadog/issues/101
-[#103]: https://github.com/DataDog/chef-datadog/issues/103
-[#105]: https://github.com/DataDog/chef-datadog/issues/105
-[#113]: https://github.com/DataDog/chef-datadog/issues/113
 [@JoeDeVries]: https://github.com/JoeDeVries
-[@alexism]: https://github.com/alexism
 [@alq]: https://github.com/alq
-[@antonio-osorio]: https://github.com/antonio-osorio
-[@babbottscott]: https://github.com/babbottscott
-[@clofresh]: https://github.com/clofresh
-[@coosh]: https://github.com/coosh
 [@drewrothstein]: https://github.com/drewrothstein
-[@dwradcliffe]: https://github.com/dwradcliffe
+[@elijahandres]: https://github.com/elijahandres
 [@elijahandrews]: https://github.com/elijahandrews
-[@evan2645]: https://github.com/evan2645
-[@flah00]: https://github.com/flah00
 [@gregf]: https://github.com/gregf
-[@jedi4ever]: https://github.com/jedi4ever
-[@jtimberman]: https://github.com/jtimberman
 [@mfischer-zd]: https://github.com/mfischer-zd
 [@miketheman]: https://github.com/miketheman
-[@nkts]: https://github.com/nkts
 [@phlipper]: https://github.com/phlipper
-[@qqfr2507]: https://github.com/qqfr2507
 [@remh]: https://github.com/remh
-[@ryandjurovich]: https://github.com/ryandjurovich
-[@schisamo]: https://github.com/schisamo
-[@thisismana]: https://github.com/thisismana
-[@timusg]: https://github.com/timusg
